@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Timesheets</title>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <script>
+     window.csrf_token = "<%= Phoenix.Controller.get_csrf_token() %>";
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div class="col-4">
+          <span class="navbar-brand">Timesheets</span>
+        </div>
+         <div class="col-4">
+          <ul class="navbar-nav mr-auto">
+            <%= nav_link(@conn, "Home", Routes.page_path(@conn, :index)) %>
+            <%= if @current_user do %>
+              <%= if @current_user.ismanager do %>
+                <%= nav_link(@conn, "Timesheets",
+                  Routes.timesheet_path(@conn, :index)) %>
+              <% else %>
+                <%= nav_link(@conn, "Timesheets",
+                  Routes.timesheet_path(@conn, :index)) %>
+                <%= nav_link(@conn, "Submit Timesheet",
+                  Routes.timesheet_path(@conn, :new)) %>
+              <% end %>
+            <% end %>
+          </ul>
+        </div>
+
+        <div class="col-4 text-light">
+          <%= if @current_user do %>
+            User: <%= link(@current_user.name,
+              to: Routes.user_path(@conn, :show, @current_user)) %>
+            (<%= link("Logout", to: Routes.session_path(@conn, :delete),
+              method: :delete) %>)
+          <% else %>
+            <%= link("Login", to: Routes.session_path(@conn, :new)) %>
+          <% end %>
+        </div>
+      </nav>
+      <div>
+        <%= if get_flash(@conn, :info) do %>
+          <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+        <% end %>
+        <%= if get_flash(@conn, :error) do %>
+          <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+        <% end %>
+        <%= render @view_module, @view_template, assigns %>
+      </div>
+    </div>
+    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>
